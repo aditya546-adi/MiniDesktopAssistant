@@ -1,0 +1,16 @@
+# Python
+mini assistent python app/venv/
+**/__pycache__/
+*.pyc
+
+# VS Code
+.vscode/
+
+# Arduino build/cache
+build/
+*.bin
+*.elf
+
+# OS
+Thumbs.db
+.DS_Store
