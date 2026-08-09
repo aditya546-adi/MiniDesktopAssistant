@@ -1,30 +1,25 @@
-"""
 from serial_manager import SerialManager
 from expressions import Expression
+from notification_manager import NotificationManager
 import time
 
 assistant = SerialManager("COM7")
+manager = NotificationManager()
 
-print("Connected")
+notification = manager.get_test_notification()
 
-assistant.send_expression(Expression.HAPPY)
+print("=" * 35)
+print("Notification Received")
+print()
+print(f"App    : {notification.app}")
+print(f"Sender : {notification.sender}")
+print(f"Message: {notification.message}")
+print("=" * 35)
 
-print("Sent")
+assistant.send_expression(Expression.MESSAGE)
 
-while True:
-    time.sleep(1)
-"""
-from serial_manager import SerialManager
-from expressions import Expression
-import time
+time.sleep(2)
 
-assistant = SerialManager("COM7")
+assistant.send_expression(Expression.NORMAL)
 
-while True:
-    assistant.send_expression(Expression.HAPPY)
-    print("HAPPY")
-    time.sleep(3)
-
-    assistant.send_expression(Expression.NORMAL)
-    print("NORMAL")
-    time.sleep(3)
+assistant.close()
