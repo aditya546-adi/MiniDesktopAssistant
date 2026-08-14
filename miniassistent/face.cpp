@@ -1,4 +1,5 @@
 #include "face.h"
+#include "serial_handler.h"   
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
@@ -93,8 +94,27 @@ void drawSleepAnimation()
 }
 
 void drawFace(const FaceState &face)
+
+
 {
     display.clearDisplay();
+
+    int leftEyeX = 36 + face.eyeX;
+    int rightEyeX = 74 + face.eyeX;
+    int eyeY = 22 + face.eyeY;
+
+    int eyeWidth = face.eyeWidth;
+    int eyeHeight = face.eyeHeight;
+    int eyeRadius = face.eyeRadius;
+
+    if (face.notificationMode)
+    {
+        eyeY = 6;
+
+        eyeWidth = 14;
+        eyeHeight = 14;
+        eyeRadius = 6;
+    }
 
     if (face.sleepEyes)
     {
@@ -114,21 +134,33 @@ void drawFace(const FaceState &face)
     {
         // Left eye
         display.fillRoundRect(
-            36 + face.eyeX,
-            22 + face.eyeY,
-            face.eyeWidth,
-            face.eyeHeight,
-            face.eyeRadius,
+            leftEyeX,
+            eyeY,
+            eyeWidth,
+            eyeHeight,
+            eyeRadius,
             SH110X_WHITE);
 
         // Right eye
         display.fillRoundRect(
-            74 + face.eyeX,
-            22 + face.eyeY,
-            face.eyeWidth,
-            face.eyeHeight,
-            face.eyeRadius,
+            rightEyeX,
+            eyeY,
+            eyeWidth,
+            eyeHeight,
+            eyeRadius,
             SH110X_WHITE);
+    }
+
+    if (face.notificationMode)
+    {
+        display.setTextSize(1);
+        display.setTextColor(SH110X_WHITE);
+
+        display.setCursor(4, 28);
+        display.print(getNotificationTitle());
+
+        display.setCursor(4, 42);
+        display.print(getNotificationBody());
     }
 
     display.display();

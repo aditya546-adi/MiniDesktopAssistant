@@ -1,5 +1,6 @@
 #ifndef FACE_H
 #define FACE_H
+#include "serial_handler.h"
 
 struct FaceState
 {
@@ -12,8 +13,9 @@ struct FaceState
     int eyeGap = 38;
 
     bool blink = false;
-
     bool sleepEyes = false;
+    
+    bool notificationMode = false;
 };
 
 void initDisplay();

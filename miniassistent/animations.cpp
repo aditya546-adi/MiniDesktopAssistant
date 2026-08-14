@@ -39,6 +39,8 @@ void updateAnimation()
     face.eyeY = currentEyeY;
     face.blink = isBlinking;
 
+    face.notificationMode = (exp == MESSAGE); //temp
+
     // -------------------- Blink --------------------
 
     if (exp != SLEEP)
@@ -66,9 +68,14 @@ void updateAnimation()
 
     face.blink = isBlinking;
 
+    if (face.notificationMode)
+    {
+        face.blink = false;
+    }
+
     // -------------------- Eye Movement --------------------
 
-    if (exp != SLEEP)
+    if (exp != SLEEP && !face.notificationMode)
     {
         if (!isBlinking)
         {

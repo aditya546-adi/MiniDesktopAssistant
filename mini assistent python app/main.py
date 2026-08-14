@@ -1,25 +1,24 @@
 from serial_manager import SerialManager
 from expressions import Expression
-from notification_manager import NotificationManager
-import time
 
 assistant = SerialManager("COM7")
-manager = NotificationManager()
 
-notification = manager.get_test_notification()
+print("Assistant Started!")
 
-print("=" * 35)
-print("Notification Received")
-print()
-print(f"App    : {notification.app}")
-print(f"Sender : {notification.sender}")
-print(f"Message: {notification.message}")
-print("=" * 35)
+while True:
+    cmd = input("Command: ").strip()
 
-assistant.send_expression(Expression.MESSAGE)
+    if cmd.upper() == "EXIT":
+        break
 
-time.sleep(2)
+    elif cmd.upper().startswith("TEXT "):
+        assistant.send_text(cmd[5:])
 
-assistant.send_expression(Expression.NORMAL)
+    elif cmd.upper().startswith("BODY "):
+        assistant.send_body(cmd[5:])
 
-assistant.close()
+    else:
+        try:
+            assistant.send_expression(Expression[cmd.upper()])
+        except KeyError:
+            print("Invalid command!")
