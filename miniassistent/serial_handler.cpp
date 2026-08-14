@@ -23,22 +23,40 @@ void updateSerialHandler()
     Serial.println(command);
 
     if (command == "NORMAL")
-        setExpression(NORMAL);
+{
+    setNotificationState(NOTIFICATION_IDLE);
+    setExpression(NORMAL);
+}
 
     else if (command == "HAPPY")
-        setExpression(HAPPY);
+    {
+    setNotificationState(NOTIFICATION_IDLE);
+    setExpression(HAPPY);
+}
 
     else if (command == "SURPRISED")
-        setExpression(SURPRISED);
+ {
+    setNotificationState(NOTIFICATION_IDLE);
+    setExpression(SURPRISED);
+}
 
     else if (command == "SAD")
-        setExpression(SAD);
+{
+    setNotificationState(NOTIFICATION_IDLE);
+    setExpression(SAD);
+}
 
     else if (command == "THINKING")
-        setExpression(THINKING);
+{
+    setNotificationState(NOTIFICATION_IDLE);
+    setExpression(THINKING);
+}
 
     else if (command == "ALERT")
-        setExpression(ALERT);
+{
+    setNotificationState(NOTIFICATION_IDLE);
+    setExpression(ALERT);
+}
 
     else if (command == "MESSAGE")
     {

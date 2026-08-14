@@ -23,6 +23,12 @@ int targetEyeY = 0;
 unsigned long lastEyeMove = 0;
 unsigned long nextEyeMove = 3000;
 
+// -------------------- Notification Animation --------------------
+
+int notificationCurrentY = 22;
+int notificationTargetY = 22;
+
+
 // =======================================================
 
 void updateAnimation()
@@ -33,6 +39,11 @@ void updateAnimation()
     Expression exp = getExpression();
 
     NotificationState notificationState = getNotificationState();
+
+    if (notificationState == NOTIFICATION_ENTER)
+        notificationTargetY = 6;
+    else
+        notificationTargetY = 22;
 
     FaceState face;
 
@@ -135,7 +146,22 @@ void updateAnimation()
     }
 
     face.eyeX = currentEyeX;
-    face.eyeY = currentEyeY;
+    if (face.notificationMode)
+    {
+        face.eyeY = notificationCurrentY - 22;
+    }
+    else
+    {
+        face.eyeY = currentEyeY;
+    }
+
+    if (notificationCurrentY < notificationTargetY)
+    notificationCurrentY++;
+
+    if (notificationCurrentY > notificationTargetY)
+        notificationCurrentY--;
+
+
         // -------------------- Expressions --------------------
 
     switch (exp)
@@ -182,7 +208,7 @@ void updateAnimation()
             face.eyeHeight = 20;
             face.eyeRadius = 12;
             face.eyeGap = 38;
-            face.eyeY = -2;
+            //face.eyeY = -2;
             break;
 
         case SLEEP:

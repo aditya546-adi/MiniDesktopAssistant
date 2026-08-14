@@ -108,13 +108,14 @@ void drawFace(const FaceState &face)
     int eyeRadius = face.eyeRadius;
 
     if (face.notificationMode)
-    {
-        eyeY = 6;
+{
+ 
+    eyeY = 22 + face.eyeY;
 
-        eyeWidth = 14;
-        eyeHeight = 14;
-        eyeRadius = 6;
-    }
+    eyeWidth = 14;
+    eyeHeight = 14;
+    eyeRadius = 6;
+}
 
     if (face.sleepEyes)
     {
