@@ -41,26 +41,29 @@ void updateSerialHandler()
         setExpression(ALERT);
 
     else if (command == "MESSAGE")
+    {
         setExpression(MESSAGE);
+        setNotificationState(NOTIFICATION_ENTER);
+    }
 
     else if (command == "SLEEP")
         setExpression(SLEEP);
 
-else if (command.startsWith("TEXT:"))
-{
-    notificationTitle = command.substring(5);
+    else if (command.startsWith("TEXT:"))
+    {
+        notificationTitle = command.substring(5);
 
-    Serial.print("Title: ");
-    Serial.println(notificationTitle);
-}
+        Serial.print("Title: ");
+        Serial.println(notificationTitle);
+    }
 
-else if (command.startsWith("BODY:"))
-{
-    notificationBody = command.substring(5);
+    else if (command.startsWith("BODY:"))
+    {
+        notificationBody = command.substring(5);
 
-    Serial.print("Body: ");
-    Serial.println(notificationBody);
-}
+        Serial.print("Body: ");
+        Serial.println(notificationBody);
+    }
 
 }
 

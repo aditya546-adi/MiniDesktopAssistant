@@ -32,6 +32,8 @@ void updateAnimation()
 
     Expression exp = getExpression();
 
+    NotificationState notificationState = getNotificationState();
+
     FaceState face;
 
     // Default values
@@ -39,7 +41,10 @@ void updateAnimation()
     face.eyeY = currentEyeY;
     face.blink = isBlinking;
 
-    face.notificationMode = (exp == MESSAGE); //temp
+    //face.notificationMode = (exp == MESSAGE); //temp
+
+    face.notificationMode =
+    (notificationState != NOTIFICATION_IDLE);
 
     // -------------------- Blink --------------------
 
