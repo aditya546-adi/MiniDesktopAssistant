@@ -3,6 +3,8 @@
 #include "face.h"
 #include "expressions.h"
 
+unsigned long notificationShowStart = 0;
+
 // -------------------- Blink --------------------
 
 unsigned long lastBlink = 0;
@@ -40,10 +42,15 @@ void updateAnimation()
 
     NotificationState notificationState = getNotificationState();
 
-    if (notificationState == NOTIFICATION_ENTER)
+    if (notificationState == NOTIFICATION_ENTER ||
+        notificationState == NOTIFICATION_SHOW)
+    {
         notificationTargetY = 6;
+    }
     else
+    {
         notificationTargetY = 22;
+    }
 
     FaceState face;
 
@@ -161,6 +168,21 @@ void updateAnimation()
     if (notificationCurrentY > notificationTargetY)
         notificationCurrentY--;
 
+    if (notificationState == NOTIFICATION_ENTER &&
+    notificationCurrentY == notificationTargetY)
+    {
+        setNotificationState(NOTIFICATION_SHOW);
+        notificationShowStart = millis();
+    }
+
+    if (notificationState == NOTIFICATION_SHOW)
+    {
+        if (millis() - notificationShowStart >= 4000)
+        {
+            setNotificationState(NOTIFICATION_IDLE);
+            setExpression(NORMAL);
+        }
+    }
 
         // -------------------- Expressions --------------------
 

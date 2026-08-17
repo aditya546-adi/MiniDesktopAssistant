@@ -1,5 +1,6 @@
 #include "face.h"
-#include "serial_handler.h"   
+#include "serial_handler.h"
+#include "expressions.h"
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SH110X.h>
@@ -152,7 +153,7 @@ void drawFace(const FaceState &face)
             SH110X_WHITE);
     }
 
-    if (face.notificationMode)
+    if (getNotificationState() == NOTIFICATION_SHOW)
     {
         display.setTextSize(1);
         display.setTextColor(SH110X_WHITE);
@@ -163,6 +164,5 @@ void drawFace(const FaceState &face)
         display.setCursor(4, 42);
         display.print(getNotificationBody());
     }
-
     display.display();
 }
