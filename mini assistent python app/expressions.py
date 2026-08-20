@@ -9,3 +9,4 @@ class Expression(Enum):
     ALERT = "ALERT"
     MESSAGE = "MESSAGE"
     SLEEP = "SLEEP"
+    MUSIC = "MUSIC"

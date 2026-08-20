@@ -58,6 +58,9 @@ void updateSerialHandler()
     setExpression(ALERT);
 }
 
+else if (command == "MUSIC")
+    setExpression(MUSIC);
+
     else if (command == "MESSAGE")
     {
         setExpression(MESSAGE);

@@ -10,7 +10,8 @@ enum Expression
     THINKING,
     ALERT,
     MESSAGE,
-    SLEEP
+    SLEEP,
+    MUSIC
 };
 
 void setExpression(Expression exp);

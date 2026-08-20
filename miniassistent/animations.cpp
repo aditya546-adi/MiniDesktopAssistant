@@ -31,6 +31,12 @@ int notificationCurrentY = 22;
 int notificationTargetY = 22;
 
 
+// -------------------- Music Animation --------------------
+
+int musicTargetX = 0;
+unsigned long lastMusicMove = 0;
+bool musicRight = true;
+
 // =======================================================
 
 void updateAnimation()
@@ -98,7 +104,9 @@ void updateAnimation()
 
     // -------------------- Eye Movement --------------------
 
-    if (exp != SLEEP && !face.notificationMode)
+    if (exp != SLEEP &&
+    exp != MUSIC &&
+    !face.notificationMode)
     {
         if (!isBlinking)
         {
@@ -175,14 +183,36 @@ void updateAnimation()
         notificationShowStart = millis();
     }
 
-    if (notificationState == NOTIFICATION_SHOW)
+   if (notificationState == NOTIFICATION_SHOW)
     {
-        if (millis() - notificationShowStart >= 4000)
+        if (now - notificationShowStart >= 4000)
         {
             setNotificationState(NOTIFICATION_IDLE);
             setExpression(NORMAL);
         }
     }
+
+
+// -------------------- Music Animation --------------------
+
+if (exp == MUSIC)
+{
+    if (now - lastMusicMove >= 500)
+    {
+        musicTargetX = musicRight ? 3 : -3;
+
+        musicRight = !musicRight;
+        lastMusicMove = now;
+    }
+
+    if (currentEyeX < musicTargetX)
+        currentEyeX++;
+
+    if (currentEyeX > musicTargetX)
+        currentEyeX--;
+
+    face.eyeX = currentEyeX;
+}
 
         // -------------------- Expressions --------------------
 
@@ -231,6 +261,12 @@ void updateAnimation()
             face.eyeRadius = 12;
             face.eyeGap = 38;
             //face.eyeY = -2;
+            break;
+        
+        case MUSIC:
+            face.eyeWidth = 22;
+            face.eyeHeight = 18;
+            face.eyeRadius = 10;
             break;
 
         case SLEEP:
