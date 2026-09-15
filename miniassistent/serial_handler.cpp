@@ -28,7 +28,7 @@ void bluetoothReconnectTask(void *parameter)
 
             Serial.println("[BT] Background reconnect attempt...");
 
-            BTAddress pc("YOUR_PC_BLUETOOTH_MAC");
+            BTAddress pc("YOUR_PC_BLUETOOTH_MAC");  //replace with your pc's bt mac  
 
             if (SerialBT.connect(
                 pc,
@@ -67,7 +67,7 @@ void initSerialHandler()
     Serial.println("Bonded devices:");
     Serial.println(SerialBT.getNumberOfBondedDevices());
 
-    Serial.println("Connecting to ADITYAS-PC...");
+    Serial.println("Connecting to YOUR-PC...");
 
     BTAddress pc("YOUR_PC_BLUETOOTH_MAC");
 
