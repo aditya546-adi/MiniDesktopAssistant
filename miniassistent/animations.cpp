@@ -30,23 +30,73 @@ unsigned long nextEyeMove = 3000;
 int notificationCurrentY = 22;
 int notificationTargetY = 22;
 
-
 // -------------------- Music Animation --------------------
 
 int musicTargetX = 0;
 unsigned long lastMusicMove = 0;
 bool musicRight = true;
 
+// -------------------- Touch Animation --------------------
+
+bool touchActive = false;
+unsigned long touchStart = 0;
+
+int touchPhase = 0;
+
 // =======================================================
 
 void updateAnimation()
 {
-    
     unsigned long now = millis();
 
     Expression exp = getExpression();
 
-    NotificationState notificationState = getNotificationState();
+    NotificationState notificationState =
+        getNotificationState();
+
+    // ===================================================
+    // TOUCH DETECTION
+    // ===================================================
+
+    if (digitalRead(2) == HIGH && !touchActive)
+    {
+        touchActive = true;
+        touchStart = now;
+        touchPhase = 1;
+
+        Serial.println("[TOUCH] Touch detected!");
+    }
+
+    if (touchActive)
+    {
+        unsigned long elapsed = now - touchStart;
+
+        if (elapsed < 500)
+        {
+            touchPhase = 1;
+        }
+        else if (elapsed < 1000)
+        {
+            touchPhase = 2;
+        }
+        else if (elapsed < 1500)
+        {
+            touchPhase = 3;
+        }
+        else if (elapsed < 2000)
+        {
+            touchPhase = 4;
+        }
+        else
+        {
+            touchActive = false;
+            touchPhase = 0;
+        }
+    }
+
+    // ===================================================
+    // NOTIFICATION POSITION
+    // ===================================================
 
     if (notificationState == NOTIFICATION_ENTER ||
         notificationState == NOTIFICATION_SHOW)
@@ -65,16 +115,17 @@ void updateAnimation()
     face.eyeY = currentEyeY;
     face.blink = isBlinking;
 
-    //face.notificationMode = (exp == MESSAGE); //temp
-
     face.notificationMode =
-    (notificationState != NOTIFICATION_IDLE);
+        (notificationState != NOTIFICATION_IDLE);
 
-    // -------------------- Blink --------------------
+    // ===================================================
+    // BLINK
+    // ===================================================
 
     if (exp != SLEEP)
     {
-        if (!isBlinking && now - lastBlink >= nextBlink)
+        if (!isBlinking &&
+            now - lastBlink >= nextBlink)
         {
             isBlinking = true;
             blinkStart = now;
@@ -102,11 +153,14 @@ void updateAnimation()
         face.blink = false;
     }
 
-    // -------------------- Eye Movement --------------------
+    // ===================================================
+    // NORMAL EYE MOVEMENT
+    // ===================================================
 
     if (exp != SLEEP &&
-    exp != MUSIC &&
-    !face.notificationMode)
+        exp != MUSIC &&
+        !face.notificationMode &&
+        !touchActive)
     {
         if (!isBlinking)
         {
@@ -161,6 +215,7 @@ void updateAnimation()
     }
 
     face.eyeX = currentEyeX;
+
     if (face.notificationMode)
     {
         face.eyeY = notificationCurrentY - 22;
@@ -170,20 +225,28 @@ void updateAnimation()
         face.eyeY = currentEyeY;
     }
 
+    // ===================================================
+    // NOTIFICATION SLIDE
+    // ===================================================
+
     if (notificationCurrentY < notificationTargetY)
-    notificationCurrentY++;
+        notificationCurrentY++;
 
     if (notificationCurrentY > notificationTargetY)
         notificationCurrentY--;
 
     if (notificationState == NOTIFICATION_ENTER &&
-    notificationCurrentY == notificationTargetY)
+        notificationCurrentY == notificationTargetY)
     {
         setNotificationState(NOTIFICATION_SHOW);
         notificationShowStart = millis();
     }
 
-   if (notificationState == NOTIFICATION_SHOW)
+    // ===================================================
+    // NOTIFICATION TIMEOUT
+    // ===================================================
+
+    if (notificationState == NOTIFICATION_SHOW)
     {
         if (now - notificationShowStart >= 4000)
         {
@@ -192,29 +255,33 @@ void updateAnimation()
         }
     }
 
+    // ===================================================
+    // MUSIC ANIMATION
+    // ===================================================
 
-// -------------------- Music Animation --------------------
-
-if (exp == MUSIC)
-{
-    if (now - lastMusicMove >= 500)
+    if (exp == MUSIC && !touchActive)
     {
-        musicTargetX = musicRight ? 3 : -3;
+        if (now - lastMusicMove >= 500)
+        {
+            musicTargetX = musicRight ? 3 : -3;
 
-        musicRight = !musicRight;
-        lastMusicMove = now;
+            musicRight = !musicRight;
+
+            lastMusicMove = now;
+        }
+
+        if (currentEyeX < musicTargetX)
+            currentEyeX++;
+
+        if (currentEyeX > musicTargetX)
+            currentEyeX--;
+
+        face.eyeX = currentEyeX;
     }
 
-    if (currentEyeX < musicTargetX)
-        currentEyeX++;
-
-    if (currentEyeX > musicTargetX)
-        currentEyeX--;
-
-    face.eyeX = currentEyeX;
-}
-
-        // -------------------- Expressions --------------------
+    // ===================================================
+    // EXPRESSIONS
+    // ===================================================
 
     switch (exp)
     {
@@ -260,9 +327,8 @@ if (exp == MUSIC)
             face.eyeHeight = 20;
             face.eyeRadius = 12;
             face.eyeGap = 38;
-            //face.eyeY = -2;
             break;
-        
+
         case MUSIC:
             face.eyeWidth = 22;
             face.eyeHeight = 18;
@@ -277,6 +343,126 @@ if (exp == MUSIC)
         default:
             break;
     }
+
+    // ===================================================
+    // TOUCH ANIMATION
+    // ===================================================
+
+// ===================================================
+// TOUCH ANIMATION — SMOOTH HAPPY PET DOG 🐶
+// ===================================================
+
+if (touchActive && !face.notificationMode)
+{
+    unsigned long t = now - touchStart;
+
+    // -----------------------------------------------
+    // 0–400 ms
+    // Gentle excited pop
+    // -----------------------------------------------
+
+    if (t < 400)
+    {
+        float p = (float)t / 400.0;
+
+        face.eyeWidth = 18 + (int)(6 * p);
+        face.eyeHeight = 22 + (int)(2 * p);
+        face.eyeRadius = 8 + (int)(3 * p);
+
+        face.eyeX = 0;
+
+        face.leftEyeY = -(int)(3 * p);
+        face.rightEyeY = -(int)(3 * p);
+    }
+
+    // -----------------------------------------------
+    // 400–1000 ms
+    // Smooth excited bounce
+    // -----------------------------------------------
+
+    else if (t < 1000)
+    {
+        float p = (float)(t - 400) / 600.0;
+
+        float bounce = sin(p * PI * 2.0) * 3.0;
+
+        face.eyeWidth = 24;
+        face.eyeHeight = 20;
+        face.eyeRadius = 10;
+
+        face.eyeX = (int)(sin(p * PI * 2.0) * 2.0);
+
+        face.leftEyeY = (int)bounce;
+        face.rightEyeY = (int)bounce;
+    }
+
+    // -----------------------------------------------
+    // 1000–1600 ms
+    // Happy little side-to-side movement
+    // -----------------------------------------------
+
+    else if (t < 1600)
+    {
+        float p = (float)(t - 1000) / 600.0;
+
+        face.eyeWidth = 23;
+        face.eyeHeight = 19;
+        face.eyeRadius = 10;
+
+        face.eyeX = (int)(sin(p * PI * 2.0) * 3.0);
+
+        face.leftEyeY = (int)(sin(p * PI * 2.0) * 1.5);
+        face.rightEyeY = face.leftEyeY;
+    }
+
+    // -----------------------------------------------
+    // 1600–2200 ms
+    // Smoothly settle back
+    // -----------------------------------------------
+
+    else if (t < 2200)
+    {
+        float p = (float)(t - 1600) / 600.0;
+
+        float settle = 1.0 - p;
+
+        face.eyeWidth =
+            18 + (int)(5 * settle);
+
+        face.eyeHeight =
+            22 - (int)(3 * settle);
+
+        face.eyeRadius =
+            8 + (int)(2 * settle);
+
+        face.eyeX =
+            (int)(3 * settle);
+
+        face.leftEyeY =
+            -(int)(2 * settle);
+
+        face.rightEyeY =
+            -(int)(2 * settle);
+    }
+
+    // -----------------------------------------------
+    // Finished
+    // -----------------------------------------------
+
+    else
+    {
+        touchActive = false;
+
+        face.eyeWidth = 18;
+        face.eyeHeight = 22;
+        face.eyeRadius = 8;
+
+        face.eyeX = 0;
+        face.leftEyeY = 0;
+        face.rightEyeY = 0;
+    }
+}
+
 
     drawFace(face);
 }

@@ -1,33 +1,62 @@
-import time
-import pygetwindow as gw
+import asyncio
+
+from winrt.windows.media.control import (
+    GlobalSystemMediaTransportControlsSessionManager as MediaManager
+)
+
 from serial_manager import SerialManager
 from expressions import Expression
 
 assistant = SerialManager("COM7")
 
-last_state = None
+async def music_monitor():
 
-while True:
+    last_state = None
 
-    music_found = False
+    while True:
 
-    windows = gw.getAllTitles()
+        try:
+            sessions = await MediaManager.request_async()
 
-    for title in windows:
-        if "YouTube Music" in title:
-            music_found = True
-            break
+            is_playing = False
 
-    if music_found != last_state:
+            for session in sessions.get_sessions():
 
-        if music_found:
-            print("🎵 MUSIC PLAYING")
-            assistant.send_expression(Expression.MUSIC)
+                if session.source_app_user_model_id != "Chrome":
+                    continue
 
-        else:
-            print("⏸️ MUSIC STOPPED")
-            assistant.send_expression(Expression.NORMAL)
+                info = await session.try_get_media_properties_async()
 
-        last_state = music_found
+                if not info.title:
+                    continue
 
-    time.sleep(1)
+                playback = session.get_playback_info().playback_status
+
+                if playback == 4:
+                    is_playing = True
+                    break
+
+            if is_playing != last_state:
+
+                if is_playing:
+                    print("🎵 MUSIC PLAYING")
+                    assistant.send_expression(Expression.MUSIC)
+
+                else:
+                    print("⏸️ MUSIC STOPPED")
+                    assistant.send_expression(Expression.NORMAL)
+
+                last_state = is_playing
+
+        except Exception as e:
+            print("[!] Music error:", e)
+
+        await asyncio.sleep(0.5)
+
+
+asyncio.run(music_monitor())
+
+
+
+
+ 
