@@ -69,7 +69,7 @@ void initSerialHandler()
 
     Serial.println("Connecting to YOUR-PC...");
 
-    BTAddress pc("YOUR_PC_BLUETOOTH_MAC");
+    BTAddress pc("YOUR_PC_BLUETOOTH_MAC"); //replace with your pc's bt mac 
 
     if (SerialBT.connect(
         pc,
