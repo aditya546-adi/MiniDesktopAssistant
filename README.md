@@ -1,4 +1,4 @@
-Mini desk assistant : 
+Mini desk assistant :
 - Made using an ESP32 and an OLED display with an animated face 
 - It can detect yt music and change the animation when music is playing
 - It can read Windows notifications and display them on the screen
